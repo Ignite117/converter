@@ -9,10 +9,41 @@ const USD_TO_EUR = 0.91
 const USD_TO_RUB = 82.83
 const EUR_TO_RUB = 1 / USD_TO_EUR * USD_TO_RUB
 
-func getUserInputStValut() string {
+func getUserInputValut(prev string) string {
 	var per string
-	fmt.Scan(&per)
+	for {
+		fmt.Scan(&per)
+		if prev == per {
+			fmt.Println("Одинаковая валюта")
+			continue
+		}
+		if ParseValut(per) {
+			break
+		}
+	}
 	return per
+}
+func getUserInputSum() float64 {
+	var sum string
+	var sumf float64
+	var err error
+	for {
+		fmt.Scan(&sum)
+		sumf, err = strconv.ParseFloat(sum, 64)
+		if err == nil && sumf > 0 {
+			break
+		} else {
+			fmt.Println("Невалидная сумма")
+		}
+	}
+	return sumf
+}
+func ParseValut(Valut string) bool {
+	if Valut != "USD" && Valut != "RUB" && Valut != "EUR" {
+		fmt.Println("Неверная валюта")
+		return false
+	}
+	return true
 }
 func calculate(count float64, stValut string, endValut string) float64 {
 	switch {
@@ -32,32 +63,16 @@ func calculate(count float64, stValut string, endValut string) float64 {
 	return 0.0
 }
 func main() {
-
 	var count float64
 	var stValut, endValut string
 	for {
 		fmt.Println("Исходная валюта(USD/RUB/EUR):")
-		stValut = getUserInputStValut()
-		if stValut != "USD" && stValut != "RUB" && stValut != "EUR" {
-			fmt.Println("Неверная валюта")
-			continue
-		}
+		stValut = getUserInputValut("")
 		fmt.Println("Сумма денег:")
-		count, _ = strconv.ParseFloat(getUserInputStValut(), 64)
-		if count < 0 {
-			fmt.Println("Некоректная сумма")
-			continue
-		}
+		count = getUserInputSum()
 		fmt.Println("Итоговая валюта(USD/RUB/EUR):")
-		endValut = getUserInputStValut()
-		if endValut != "USD" && endValut != "RUB" && endValut != "EUR" {
-			fmt.Println("Неверная валюта")
-			continue
-		}
-		if stValut == endValut {
-			fmt.Println("Одинаковая валюта")
-			continue
-		}
+		endValut = getUserInputValut(stValut)
+		fmt.Println("Итог:")
 		total := calculate(count, stValut, endValut)
 		fmt.Println(total)
 
